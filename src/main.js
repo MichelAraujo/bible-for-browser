@@ -4,12 +4,16 @@ const path = require('path');
 
 /**
  * This function is to config and create a browser window
+ *
+ * @return {object} BrowserWindow
  */
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
@@ -18,14 +22,20 @@ function createWindow() {
   mainWindow.loadFile('src/view/main.html');
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
+
+  return mainWindow;
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow();
+  const browserWindow = createWindow();
+
+  browserWindow.webContents.on('did-finish-load', () => {
+    browserWindow.webContents.send('asynchronous-reply', 'teste!!!');
+  });
 
   app.on('activate', function() {
     // On macOS it's common to re-create a window in the app when the
