@@ -6,9 +6,8 @@
     <title>Bible for Browser</title>
   </head>
   <body>
-
     <div>
-      <input type="search" />
+      <input type="search" id="search-input" />
     </div>
 
     <div id="container-data">
@@ -17,17 +16,15 @@
     </div>
 
     <!-- You can also require other files to run in this process -->
-    <!-- <script src="./renderer.js"></script> -->
+    <script src="./renderer.js"></script>
 
     <script>
-      const { ipcRenderer } = require('electron');
-
-      ipcRenderer.on('asynchronous-reply', (event, arg) => {
+      ipcRenderer.on('search-event', (event, arg) => {
         // Receive messages from main.js
         console.log(arg) // prints "pong"
         const container = document.getElementById('container-data');
         // const stuff = arg.map((item) => `<p>${item}<p>`)
-        container.innerHTML = 'teste';
+        container.innerHTML = arg;
       });
     </script>
 

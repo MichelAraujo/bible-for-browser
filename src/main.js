@@ -1,40 +1,24 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron');
-const path = require('path');
-
-/**
- * This function is to config and create a browser window
- *
- * @return {object} BrowserWindow
- */
-function createWindow() {
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
-
-  // load the index.html of the app.
-  mainWindow.loadFile('src/view/main.html');
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
-  return mainWindow;
-}
+const {app, BrowserWindow, ipcMain} = require('electron');
+const windowConfig = require('./configs/window');
+const search = require('./domain/search');
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  const browserWindow = createWindow();
+  const browserWindow = windowConfig.createWindow();
 
   browserWindow.webContents.on('did-finish-load', () => {
-    browserWindow.webContents.send('asynchronous-reply', 'teste!!!');
+    /**
+     * Listener the "search-event" make the search in DB and throw
+     * a render event to show in HTML
+     */
+    ipcMain.handle('search-event', async (event, eventData) => {
+      const dataToShow = await search(eventData);
+      console.log('SEARCH RESUTL:', dataToShow);
+      browserWindow.webContents.send('render-event', 'tent');
+    });
   });
 
   app.on('activate', function() {
