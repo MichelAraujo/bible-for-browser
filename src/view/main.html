@@ -19,12 +19,12 @@
     <script src="./renderer.js"></script>
 
     <script>
-      ipcRenderer.on('search-event', (event, arg) => {
+      ipcRenderer.on('render-event', (event, arg) => {
         // Receive messages from main.js
         console.log(arg) // prints "pong"
         const container = document.getElementById('container-data');
         // const stuff = arg.map((item) => `<p>${item}<p>`)
-        container.innerHTML = arg;
+        container.innerHTML = `<h1>${arg.name}</h1> <p>${arg.verse}</p>`;
       });
     </script>
 

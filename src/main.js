@@ -17,7 +17,7 @@ app.whenReady().then(() => {
     ipcMain.handle('search-event', async (event, eventData) => {
       const dataToShow = await search(eventData);
       console.log('SEARCH RESUTL:', dataToShow);
-      browserWindow.webContents.send('render-event', 'tent');
+      browserWindow.webContents.send('render-event', dataToShow);
     });
   });
 
