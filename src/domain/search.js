@@ -1,24 +1,34 @@
-// const fs = require('fs');
-// const path = require('path');
 const jsonData = require('../database/nvi');
 
-const search = (eventData) => {
-  // const jsonPath = path.join(__dirname, '../database/nvi.json');
-  // const jsonBuffer = fs.readFileSync(jsonPath);
+const extractChapterAndVerse = (data) => {
+  const dataArray = data.split(' ');
+  const book = dataArray[0];
 
-  const chapterToFind = eventData.split(' ');
-  const verseToFind = chapterToFind[1].split(':');
+  const chapterAndVerse = dataArray[1].split(':');
+  const chapter = chapterAndVerse[0];
+  const verse = chapterAndVerse[1];
 
-  const book = jsonData.data.find((data) => data.abbrev === chapterToFind[0]);
-  const chapter = book.chapters[verseToFind[0]-1];
-  const verse = chapter[verseToFind[1]-1];
-
-  const result = {
+  const textToSearch = {
+    book,
+    chapter,
     verse,
-    name: `${book.name} ${verseToFind[0]}:${verseToFind[1]}`,
+  };
+  return textToSearch;
+};
+
+const search = (eventData) => {
+  const textToSearch = extractChapterAndVerse(eventData);
+
+  const book = jsonData.data.find((data) => data.abbrev === textToSearch.book);
+  const chapter = book.chapters[textToSearch.chapter-1];
+  const verse = chapter[textToSearch.verse-1];
+
+  const dataToShow = {
+    verse,
+    name: `${book.name} ${textToSearch.chapter}:${textToSearch.verse}`,
   };
 
-  return result;
+  return dataToShow;
 };
 
 module.exports = search;

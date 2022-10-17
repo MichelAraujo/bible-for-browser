@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, globalShortcut} = require('electron');
 const windowConfig = require('./configs/window');
 const search = require('./domain/search');
 
@@ -11,13 +11,16 @@ app.whenReady().then(() => {
 
   browserWindow.webContents.on('did-finish-load', () => {
     /**
-     * Listener the "search-event" make the search in DB and throw
+     * Listener the "search-event" make the search in JSON and throw
      * a render event to show in HTML
      */
     ipcMain.handle('search-event', async (event, eventData) => {
-      const dataToShow = await search(eventData);
-      console.log('SEARCH RESUTL:', dataToShow);
-      browserWindow.webContents.send('render-event', dataToShow);
+      const dataToRender = await search(eventData);
+      browserWindow.webContents.send('render-event', dataToRender);
+    });
+
+    globalShortcut.register('Alt+CommandOrControl+I', () => {
+      console.log('Electron loves global shortcuts!');
     });
   });
 
