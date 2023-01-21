@@ -8,8 +8,16 @@ const search = require('./domain/search');
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   const browserWindow = windowConfig.createWindow();
+  const currentState = {};
+  currentState.book = 'gn';
+  currentState.chapter = 1;
+  currentState.verse = 1;
+  currentState.prototype.toString.call(() => ('gn 1:2'));
 
-  browserWindow.webContents.on('did-finish-load', () => {
+  browserWindow.webContents.on('did-finish-load', async () => {
+    const firstContentRender = await search(currentState.toString());
+    browserWindow.webContents.send('render-event', firstContentRender);
+
     /**
      * Listener the "search-event" make the search in JSON and throw
      * a render event to show in HTML
@@ -17,6 +25,13 @@ app.whenReady().then(() => {
     ipcMain.handle('search-event', async (event, eventData) => {
       const dataToRender = await search(eventData);
       browserWindow.webContents.send('render-event', dataToRender);
+    });
+
+    ipcMain.handle('next-event', async (event, eventData) => {
+      currentState.verse += 1;
+      console.log('######### => ', currentState);
+      // const dataToRender = await search(eventData);
+      // browserWindow.webContents.send('render-event', dataToRender);
     });
 
     globalShortcut.register('Alt+CommandOrControl+I', () => {

@@ -14,7 +14,7 @@ searchInputElement.addEventListener('keyup', (event) => {
 
 window.addEventListener('keyup', (event) => {
   if (event.key === 'ArrowRight') {
-    console.log('next');
+    ipcRenderer.invoke('next-event');
   } else if (event.key === 'ArrowLeft') {
     console.log('prev');
   }
