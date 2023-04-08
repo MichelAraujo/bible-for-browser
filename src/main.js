@@ -12,14 +12,13 @@ app.whenReady().then(() => {
   currentState.book = 'gn';
   currentState.chapter = 1;
   currentState.verse = 1;
-  currentState.prototype.toString.call(() => ('gn 1:2'));
 
   browserWindow.webContents.on('did-finish-load', async () => {
-    const firstContentRender = await search(currentState.toString());
+    const firstContentRender = await search(`${currentState.book} ${currentState.chapter}:${currentState.verse}`);
     browserWindow.webContents.send('render-event', firstContentRender);
 
     /**
-     * Listener the "search-event" make the search in JSON and throw
+     * Listener the "search-event" (search bar) make the search in JSON and throw
      * a render event to show in HTML
      */
     ipcMain.handle('search-event', async (event, eventData) => {
@@ -28,12 +27,16 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle('next-event', async (event, eventData) => {
+      // TODO 2: Make validation about end of the book
       currentState.verse += 1;
       console.log('######### => ', currentState);
-      // const dataToRender = await search(eventData);
-      // browserWindow.webContents.send('render-event', dataToRender);
+      const dataToRender = await search(`${currentState.book} ${currentState.chapter}:${currentState.verse}`);
+      browserWindow.webContents.send('render-event', dataToRender);
     });
 
+    /**
+     * TODO 1: make the search bar open and close by shortcuts  
+     */
     globalShortcut.register('Alt+CommandOrControl+I', () => {
       console.log('Electron loves global shortcuts!');
     });
