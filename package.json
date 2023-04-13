@@ -1,0 +1,30 @@
+{
+  "name": "bible-for-browser",
+  "version": "1.0.0",
+  "description": "This project has the aim to be an easy way to search and seek through the whole Bible, to easily find out some text, using the keyboard shortcuts to faster interaction.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "nodemon --watch . --exec npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichelAraujo/bible-for-browser.git"
+  },
+  "author": "Michel Araujo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MichelAraujo/bible-for-browser/issues"
+  },
+  "homepage": "https://github.com/MichelAraujo/bible-for-browser#readme",
+  "devDependencies": {
+    "electron": "^21.1.0",
+    "eslint": "^8.25.0",
+    "eslint-config-google": "^0.14.0",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "puppeteer": "^19.8.5"
+  }
+}
