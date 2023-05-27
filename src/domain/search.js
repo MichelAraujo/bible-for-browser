@@ -26,9 +26,18 @@ const search = (eventData) => {
   const dataToShow = {
     verse,
     name: `${book.name} ${textToSearch.chapter}:${textToSearch.verse}`,
+    index: {
+      ...book.index,
+      verseMaxNumber:Object.keys(chapter).length,
+      currentBook: textToSearch.book,
+      currentChapter: textToSearch.chapter,
+      currentVerse: textToSearch.verse,
+    },
   };
 
   return dataToShow;
 };
 
-module.exports = search;
+const generateStringToSearch = (applicationState) => `${applicationState.book} ${applicationState.chapterNumber}:${applicationState.verseNumber}`;
+
+module.exports = {search, generateStringToSearch};
