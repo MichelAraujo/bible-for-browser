@@ -3,21 +3,36 @@ const {app, BrowserWindow, ipcMain, globalShortcut} = require('electron');
 const windowConfig = require('./configs/window');
 const {search, generateStringToSearch } = require('./domain/search');
 
+const nextEvent = (eventData, applicationState) => {
+  // Change to next book
+  if (applicationState.verseNumber >= eventData.verseMaxNumber
+    && applicationState.chapterNumber >= eventData.chapterMaxNumber
+  ) {
+    applicationState.book = eventData.nextBook;
+    applicationState.chapterNumber = 1;
+    applicationState.verseNumber = 0;
+    return applicationState;
+  }
+
+  // Change to next chapter
+  if (applicationState.verseNumber >= eventData.verseMaxNumber) {
+    applicationState.chapterNumber = Number(applicationState.chapterNumber) + 1;
+    applicationState.verseNumber = 0;
+    return applicationState;
+  }
+
+  return applicationState;
+};
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   const browserWindow = windowConfig.createWindow();
-  const applicationState = {};
+  let applicationState = {};
   applicationState.book = 'gn';
   applicationState.chapterNumber = 1;
   applicationState.verseNumber = 1;
-
-  const setState = (data) => {
-    applicationState.book = data.currentBook;
-    applicationState.chapterNumber = data.currentChapter;
-    applicationState.verseNumber = data.currentVerse;
-  };
 
   browserWindow.webContents.on('did-finish-load', async () => {
     const firstContentRender = await search(generateStringToSearch(applicationState));
@@ -30,7 +45,9 @@ app.whenReady().then(() => {
     ipcMain.handle('search-event', async (event, eventData) => {
       const dataToRender = await search(eventData);
 
-      setState(dataToRender.index);
+      applicationState.book = dataToRender.index.currentBook;
+      applicationState.chapterNumber = dataToRender.index.currentChapter;
+      applicationState.verseNumber = dataToRender.index.currentVerse;
       browserWindow.webContents.send('render-event', dataToRender);
     });
 
@@ -38,11 +55,7 @@ app.whenReady().then(() => {
       applicationState.verseNumber = Number(applicationState.verseNumber) + 1;
       const dataToRender = await search(generateStringToSearch(applicationState));
   
-      if (applicationState.verseNumber >= dataToRender.index.verseMaxNumber) {
-        applicationState.book = dataToRender.index.nextBook;
-        applicationState.chapterNumber = 1;
-        applicationState.verseNumber = 0;
-      }
+      applicationState = nextEvent(dataToRender.index, applicationState);
 
       browserWindow.webContents.send('render-event', dataToRender);
     });

@@ -28,7 +28,8 @@ const search = (eventData) => {
     name: `${book.name} ${textToSearch.chapter}:${textToSearch.verse}`,
     index: {
       ...book.index,
-      verseMaxNumber:Object.keys(chapter).length,
+      verseMaxNumber: Object.keys(chapter).length,
+      chapterMaxNumber: Object.keys(book.chapters).length, 
       currentBook: textToSearch.book,
       currentChapter: textToSearch.chapter,
       currentVerse: textToSearch.verse,
